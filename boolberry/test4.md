@@ -591,6 +591,7 @@ The following steps show an example of cold-signing process.
 </blockquote>**
 3. In production environment start the daemon (let it perform initial sync if running for the first time and make sure it is synchronized), then start the watch-only wallet: 
 
+
 **simplewallet --wallet-file bbr_wallet_watch_only.keys --password WATCH_PASSWORD** 
 
 **--rpc-bind-ip RPC_IP --rpc-bind-port RPC_PORT --daemon-address** 
