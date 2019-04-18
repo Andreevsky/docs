@@ -29,3 +29,14 @@ In original CryptoNote there were two separate things: exchange deposit address 
 For more information on how to handle integrated addresses, please refer to RPCs make_integrated_address and split_integrated_address below.
 
 # List of Wallet RPCs
+
+## getbalance
+Retrieves current wallet balance: total and unlocked.
+### Inputs:
+None.
+### Outputs:
+balance — unsigned integer; total amount of funds the wallet has (unlocked and locked coins).
+unlocked_balance — unsigned integer; unlocked funds, i.e. coins that are stored deep enough in the blockchain to be considered relatively safe to spend. Only this amount of coins are immediately spendable.
+unlocked_balance is always less or equal to balance.
+### Examples
+
