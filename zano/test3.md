@@ -370,23 +370,25 @@ If someone has your spend secret key, he can spend your coins. Master keys shoul
 
    1.1 Start simplewallet to generate master wallet:
 
-**simplewallet --generate-new-wallet zano_wallet_master**
-(zano_wallet_master is wallet's filename and can be changed freely)
+   **simplewallet --generate-new-wallet zano_wallet_master**
+   (zano_wallet_master is wallet's filename and can be changed freely)
 
    1.2 Type in a password when asked.
 
    1.3 Type the following command into wallet's console:
 
-**save_watch_only zano_wallet_watch_only.keys WATCH_PASSWORD**
+   **save_watch_only zano_wallet_watch_only.keys WATCH_PASSWORD**
 
-where WATCH_PASSWORD is password for a watch-only wallet.
-You should see:
+   where WATCH_PASSWORD is password for a watch-only wallet.
 
-**Keys stored to zano_wallet_watch_only.keys**
+   You should see:
+
+   **Keys stored to zano_wallet_watch_only.keys**
 
    1.4 Type **exit** to quit simplewallet.
 
 2. Copy zano_wallet_watch_only.keys file from secure environment to your production environment where daemons and hot wallet are supposed to be run.
+
 **<blockquote>
 	NOTE: zano_wallet_master.keys file contains master wallet private keys! You may want it to never leave secure environment.</blockquote>**
 3. In production environment start the daemon (let it perform initial sync if running for the first time and make sure it is synchronized), then start the watch-only wallet: 
