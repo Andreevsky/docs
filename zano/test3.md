@@ -168,3 +168,199 @@ $ curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --
     	}]
       }
     }
+
+## get_bulk_payments
+Gets list of incoming transfers by given payment IDs.
+### Inputs:
+payment_ids — array of strings; hex-encoded payment IDs.
+min_block_height — integer; minimum block height.
+
+### Outputs:
+payments — list of payment_details object (see get_payments for details).
+### Example
+`
+$  curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --data-binary '{"jsonrpc":"2.0","id":"5","method":"get_bulk_payments", "params":{"payment_ids":["aaaa", "bbbb"]}'
+`
+
+    {
+      "id": "5",
+      "jsonrpc": "2.0",
+      "result": {
+    	"payments": [{
+     	"amount": 100000000000000,
+      	"block_height": 131944,
+      	"payment_id": "aaaa",
+      	"tx_hash": "176416cb542884e10f826627f87df6cf45a16039f913deb2e41f5f2d0647a96d",
+      	"unlock_time": 0
+    	}]
+      }
+    }
+
+## make_integrated_address
+Creates an integrated address for the wallet by embedding the given payment ID together with the wallet's public address.
+### Inputs:
+payment_id — string; hex-encoded payment identifier. If empty, random 8-byte payment ID will be generated and used.
+### Outputs:
+integrated_address — string; the result.
+payment_id — string; hex-encoded payment ID, that was used (useful if an empty payment_id was given as an input).
+### Examples
+#### Empty payment ID
+`
+$ curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --data-binary '{"jsonrpc":"2.0","id":"0","method":"make_integrated_address","params":{"payment_id":""}}'
+`
+
+    {
+      "id": "0",
+      "jsonrpc": "2.0",
+      "result": {
+       "integrated_address": "iZ25D6ReVWYffiH9gj7w3SYUeQ5s53yUBFGoyGChaqpQdud2uNUaA936Q2ngcEouvmgA48WMZQyv41R2ASstyYHoSrxe72RZzxJ1LQ5XnacR",
+        "payment_id": "717f5ad22cab26f4"
+      }
+    }
+#### Invalid payment ID
+`
+$ curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --data-binary '{"jsonrpc":"2.0","id":"3","method":"make_integrated_address","params":{"payment_id":" !@&#*"}}'
+`
+
+    {
+      "error": {
+        "code": -5,
+        "message": "invalid payment id given: ' !@&#*', hex-encoded string was expected"
+      },
+      "id": "3",
+      "jsonrpc": "2.0"
+    }
+#### Correct payment ID
+`
+$ curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --data-binary '{"jsonrpc":"2.0","id":"3","method":"make_integrated_address","params":{"payment_id":"00000000FF00ff00"}}'
+`
+
+    {
+      "id": "3",
+      "jsonrpc": "2.0",
+      "result": {
+        "integrated_address": "iZ25D6ReVWYffiH9gj7w3SYUeQ5s53yUBFGoyGChaqpQdud2uNUaA936Q2ngcEouvmgA48WMZQyv41R2ASstyYHoSrwfaxRfrgw3Bz18Df3m",
+        "payment_id": "00000000ff00ff00"
+      }
+    }
+## split_integrated_address
+### Inputs:
+integrated_address — string; integrated or standard address.
+### Outputs:
+standard_address — string; standard address with no payment ID attached
+payment_id — string; hex-encoded payment ID, extracted from the given integrated address. Can be empty. Will be empty when a standard address is given as an input.
+### Examples
+#### Invalid integrated address
+`
+$ curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --data-binary '{"jsonrpc":"2.0","id":"3","method":"split_integrated_address","params":{"integrated_address":"!k9s02j23n"}}'
+`
+
+    {
+      "error": {
+        "code": -2,
+        "message": "invalid integrated address given: '!k9s02j23n'"
+      },
+      "id": "3",
+      "jsonrpc": "2.0"
+    }
+
+#### Valid integrated address
+`
+$ curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --data-binary '{"jsonrpc":"2.0","id":"3","method":"split_integrated_address","params":{"integrated_address":"iZ25D6ReVWYffiH9gj7w3SYUeQ5s53yUBFGoyGChaqpQdud2uNUaA936Q2ngcEouvmgA48WMZQyv41R2ASstyYHoSrwfaxRfrgw3Bz18Df3m"}}'
+`
+
+    {
+      "id": "3",
+      "jsonrpc": "2.0",
+      "result": {
+        "payment_id": "00000000ff00ff00",
+        "standard_address": "ZxCb5oL6RTEffiH9gj7w3SYUeQ5s53yUBFGoyGChaqpQdud2uNUaA936Q2ngcEouvmgA48WMZQyv41R2ASstyYHo2Kzeoh7GA"
+      }
+    }
+
+#### Valid standard address
+`
+$ curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --data-binary '{"jsonrpc":"2.0","id":"3","method":"split_integrated_address","params":{"integrated_address":"ZxCb5oL6RTEffiH9gj7w3SYUeQ5s53yUBFGoyGChaqpQdud2uNUaA936Q2ngcEouvmgA48WMZQyv41R2ASstyYHo2Kzeoh7GA"}}'
+`
+
+    {
+      "id": "3",
+      "jsonrpc": "2.0",
+      "result": {
+        "payment_id": "",
+        "standard_address": "ZxCb5oL6RTEffiH9gj7w3SYUeQ5s53yUBFGoyGChaqpQdud2uNUaA936Q2ngcEouvmgA48WMZQyv41R2ASstyYHo2Kzeoh7GA"
+      }
+    }
+
+## sign_transfer
+Signs a transaction prepared by watch-only wallet (for cold-signing process).
+NOTE: this method requires spending private key and can't be served by watch-only wallets.
+
+### Inputs:
+tx_unsigned_hex — string; hex-encoded unsigned transaction as returned from transfer call.
+
+### Outputs:
+tx_hash — string; hash identifier of signed transaction.
+tx_signed_hex — string; hex-encoded signed transaction.
+
+### Example
+`
+$ curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --data-binary '{"jsonrpc":"2.0","id":"0","method":"sign_transfer", "params":{  "tx_unsigned_hex" : "00-LONG-HEX-00" }'
+`
+
+    {
+      "id": "0",
+      "jsonrpc": "2.0",
+      "result": {
+           "tx_hash": "855ae466c59b24295152740e84d7f823eaf3c91adfb1ba7b4ff1dc6085b79e63",
+	    "tx_signed_hex": "00-LONG-HEX-00"
+      }
+    }
+
+## submit_transfer
+Broadcasts transaction that was previously signed using sign_transfer call.
+This method is designed for using with watch-only wallets that are unable to sign transactions by themselves.
+
+### Inputs:
+tx_signed_hex — string; hex-encoded signed transaction as returned from sign_transfer call.
+
+### Outputs:
+tx_hash — string; transaction hash identifier.
+
+### Examples
+#### Transaction was rejected for some reason (see daemon logs for details)
+`
+$ curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --data-binary '{"jsonrpc":"2.0","id":"0","method":"submit_transfer", "params":{  "tx_signed_hex": "00-LONG-HASH-00"  }'
+`
+
+     {
+      "error": {
+    	"code": -4,
+    	"message": "transaction was rejected by daemon"
+      },
+      "id": "0",
+      "jsonrpc": "2.0"
+    }
+
+#### Transaction successfully sent
+`
+$ curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --data-binary '{"jsonrpc":"2.0","id":"0","method":"submit_transfer", "params":{  "tx_signed_hex": "00-LONG-HASH-00"  }'
+`
+
+    {
+      "id": "0",
+      "jsonrpc": "2.0",
+      "result": {
+    	"tx_hash": "0554849abdb62f7d1902ddd14ce005722a340fc14fab4a375adc8749abf4e10b"
+      }
+    }
+
+# Signing transactions offline (cold-signing process)
+## Introduction
+In order to provide more security it's possible to sign transactions offline using a dedicated wallet application instance e.g. running in a secure environment.
+![cold-signing process](https://files.readme.io/ebd2fc1-pasted_image_0.png "cold-signing process")
+Zano as a CryptoNote coin uses two key pairs (4 keys) per wallet: view key (secret+public) and spend key (secret+public)
+
+So called "hot wallet" (or watch-only wallet) uses only view secret key. This allows it to distinguish its transactions among others in the blockchain. To spend coins a wallet needs spend secret key. It is required to sign a tx. Watch-only wallet don't have access to spend secret key and thus it can't spend coins.
+
+If someone has your spend secret key, he can spend your coins. Master keys should be handled with care.
