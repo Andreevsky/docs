@@ -368,29 +368,34 @@ If someone has your spend secret key, he can spend your coins. Master keys shoul
 ## Setup
 1. In a secure environment create a new master wallet:
 
-1.1 Start simplewallet to generate master wallet:
+   1.1 Start simplewallet to generate master wallet:
 
 **simplewallet --generate-new-wallet zano_wallet_master**
 (zano_wallet_master is wallet's filename and can be changed freely)
 
-1.2 Type in a password when asked.
+   1.2 Type in a password when asked.
 
-1.3 Type the following command into wallet's console:
+   1.3 Type the following command into wallet's console:
 
 **save_watch_only zano_wallet_watch_only.keys WATCH_PASSWORD**
 
 where WATCH_PASSWORD is password for a watch-only wallet.
 You should see:
+
 **Keys stored to zano_wallet_watch_only.keys**
 
-1.4 Type **exit** to quit simplewallet.
+   1.4 Type **exit** to quit simplewallet.
 
 2. Copy zano_wallet_watch_only.keys file from secure environment to your production environment where daemons and hot wallet are supposed to be run.
 **<blockquote>
 	NOTE: zano_wallet_master.keys file contains master wallet private keys! You may want it to never leave secure environment.</blockquote>**
 3. In production environment start the daemon (let it perform initial sync if running for the first time and make sure it is synchronized), then start the watch-only wallet: 
 
-**simplewallet --wallet-file zano_wallet_watch_only.keys --password WATCH_PASSWORD --rpc-bind-ip RPC_IP --rpc-bind-port RPC_PORT --daemon-address DEAMON_ADDR:DAEMON_PORT --log-file LOG_FILE_NAME**
+**simplewallet --wallet-file zano_wallet_watch_only.keys --password WATCH_PASSWORD** 
+
+**--rpc-bind-ip RPC_IP --rpc-bind-port RPC_PORT --daemon-address DEAMON_ADDR:DAEMON_PORT** 
+
+**--log-file LOG_FILE_NAME**
 
 (see also the Introduction; for the first run you can add **--log-level=0** to avoid too verbose messages, for subsequent runs you can use **--log-level=1** or **--log-level=2**)
 
@@ -398,6 +403,7 @@ Setup is complete.
 
 ## Example of a transaction cold-signing
 In order to sign a transaction, follow these steps:
+
 4. Using RPC transfer create a transaction.
 Because of using watch-only wallet keys for this instance of wallet application (please note passing **zano_wallet_watch_only.keys** in i.3) a transaction will not be signed and broadcasted. Instead, unsigned transaction will be prepared and returned via RPC.
 
@@ -422,6 +428,7 @@ Unsigned transaction data retrieved in tx_unsigned_hex field should be passed to
 5. Run master wallet within secure environment:
 
 **simplewallet --wallet-file zano_wallet_master --password MASTER_PASSWORD --offline-mode**
+
 6. Using RPC sing_transfer sing the transaction using master wallet.
 
 RPC example:
