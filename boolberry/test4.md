@@ -7,13 +7,19 @@ Starting the wallet in RPC server mode:
 `
 simplewallet --wallet-file PATH_TO_WALLET_FILE --password PASSWORD --rpc-bind-ip RPC_IP --rpc-bind-port RPC_PORT --daemon-address DEAMON_ADDR:DAEMON_PORT --log-file LOG_FILE_NAME
 `
+
 where:
 
 *PATH_TO_WALLET_FILE* — path to an existing wallet file (should be created beforehand using  *--generate-new-wallet command*);
+
 *PASSWORD* — wallet password;
+
 *RPC_IP* — IP address to bind RPC server to (127.0.0.1 will be used if not specified);
+
 *RPC_PORT* — TCP port for RPC server;
+
 *DEAMON_ADDR:DAEMON_PORT* — daemon address and port (may be omitted if the daemon is running on the same machine with the default settings);
+
 *LOG_FILE_NAME* — path and filename of simplewallet log file.
 
 Examples below are given with assumption that the wallet application is running in RPC server mode and listening at 127.0.0.1:12233.
@@ -27,7 +33,9 @@ Retrieves current wallet balance: total and unlocked.
 None.
 ### Outputs:
 balance — unsigned integer; total amount of funds the wallet has (unlocked and locked coins).
+
 unlocked_balance — unsigned integer; unlocked funds, i.e. coins that are stored deep enough in the blockchain to be considered relatively safe to spend. Only this amount of coins are immediately spendable.
+
 unlocked_balance is always less or equal to balance.
 ### Examples
 `
@@ -66,8 +74,11 @@ $ curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --
 Creates a transaction and broadcasts it to the network.
 ### Inputs:
 destinations — list of transfer_destination objects (see below); list of recipients with corresponding amount of coins for each.
+
 fee — unsigned int; transaction fee in atomic units. Minimum 105 atomic units, recommended 106 or 107.
+
 mixin — unsigned int; number of foreign outputs to be mixed in with each input. Increases untraceability. Use 0 for direct and traceable transfers.
+
 payment_id — string; hex-encoded payment id. Can be empty if payment id is not required for this transfer.
 
 transfer_destination object fields:
@@ -147,9 +158,13 @@ payment_id — string; hex-encoded payment id.
 result — list of payments object.
 
 payments object fields:
+
 amount — unsigned int; amount of coins in atomic units.
+
 block_height — unsigned int; height of the block containing corresponding transaction.
+
 tx_hash — string; transaction hash.
+
 unlock_time — unsigned int; if non-zero — unix timestamp after which this transfer coins can be spent. If it is less than 500000000, the value is treated as a minimum block height at which this transfer coin can be spent.
 ### Examples
 `
@@ -175,17 +190,25 @@ Attempts to merge all outputs with amount less than specified and transfer it to
 
 ### Inputs:
 address — string; funds transfer destination. Integrated addresses are allowed if payment_id_hex is empty or unspecified.
+
 amount — unsigned integer; upper boundary for output amount. Outputs with less amount than specified value are considered as candidates to be included into the transaction.
+
 fee — unsigned integer; transaction fee.
+
 payment_id_hex — string (optional); payment identifier of the transaction.
+
 mixin — unsigned integer (optional); number of fake outputs to be mixed in with real ones for better untraceability. Default is zero.
 unlock_time — unsigned integer (optional); timestamp or block height in the future when generated transaction becomes spendable. Default if zero (no lock time).
 
 ### Outputs:
 amount_swept — unsigned integer; sum of output amounts that were actually swept, i.e. transferred to the given address.
+
 amount_total — unsigned integer; total sum of all output amounts satisfying amount criteria that were present in the wallet prior to this operation.
+
 outs_swept — unsigned integer; number of outputs that were actually swept, i.e. transferred to the given address.
-outs_total — unsigned integer; total number of all outputs satisfying amount criteria that were present in the wallet prior to this operation. If outs_swept equals to outs_total it means that all such outputs were successfully swept. Otherwise a user may want to call this method again to take care of left outputs..
+
+outs_total — unsigned integer; total number of all outputs satisfying amount criteria that were present in the wallet prior to this operation. If outs_swept equals to outs_total it means that all such outputs were successfully swept. Otherwise a user may want to call this method again to take care of left outputs.
+
 tx_hash — string; hash identifier of generated transaction.
 
 ### Examples
@@ -261,10 +284,15 @@ min_block_height — integer; minimum block height.
 payments — list of payment_details object.
 
 Fields of payment_details object:
+
 payment_id — string; hex-encoded payment ID.
+
 tx_hash — string; transaction hash identifier.
+
 amount — integer; transfer amount.
+
 block_height — integer; height of a block containing corresponding transaction.
+
 unlock_time — integer; transaction unlock time.
 
 ### Example
@@ -290,35 +318,59 @@ $  curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' -
 Retrieves filtered list of transfers.
 ### Inputs:
 in — boolean; if true then incoming transactions will be taken into account.
+
 out — boolean; if true then outgoing transactions will be taken into account.
+
 pending — boolean; not supported yet, will be ignored.
+
 failed — boolean; not supported yet, will be ignored.
+
 pool — boolean; if true then unconfirmed in/out txs will be taken into account.
+
 filter_by_height — boolean; if true then transfers will be filtered by block height.
+
 min_height — integer; minimum block height (including).
+
 max_height — integer; maximum block height (including).
 
 ### Outputs:
 in — list of wallet_transfer_info objects, corresponding to incoming transactions;
+
 out — list of wallet_transfer_info objects, corresponding to outgoing transactions.
+
 pool — list of wallet_transfer_info objects, corresponding to unconfirmed transactions.
 
 Fields of wallet_transfer_info object:
+
 amount — integer; transfer amount.
+
 timestamp — integer; transaction timestamp.
+
 tx_hash — string; transaction identifier.
+
 height — integer; corresponding block height (zero means unconfirmed).
+
 unlock_time — integer; transaction unlock time.
+
 tx_blob_size — integer; transaction size in bytes.
+
 payment_id — string; hex-encoded payment ID.
+
 destinations — string; destination address or addresses.
+
 destination_alias — string; destination alias that was used (if any).
+
 is_income — boolean; true if this transfer is an incoming transfer.
+
 fee — integer; transaction fee.
+
 td — object of wallet_transfer_info_details object (see below).
 
+
 wallet_transfer_info_details fields:
+
 rcv — list of integers; indices of received transfers.
+
 spn — list of integers; indices of spent transfers.
 
 ### Example
@@ -354,7 +406,9 @@ Converts standard address into an integrated address and vica versa.
 
 ### Inputs and outputs:
 address_str — string; standard address.
+
 payment_id_hex — string; hex-encoded payment id.
+
 integrated_address_str — string; integrated address.
 
 This RPC does conversion both ways:
@@ -401,6 +455,7 @@ tx_unsigned_hex — string; hex-encoded unsigned transaction as returned from tr
 
 ### Outputs:
 tx_hash — string; hash identifier of signed transaction.
+
 tx_signed_hex — string; hex-encoded signed transaction.
 
 ### Example
@@ -423,6 +478,7 @@ This method is designed for using with watch-only wallets that are unable to sig
 
 ### Inputs:
 tx_unsigned_hex — string; hex-encoded unsigned transaction as returned from transfer call.
+
 tx_signed_hex — string; hex-encoded signed transaction as returned from sign_transfer call.
 
 ### Outputs:
@@ -517,13 +573,17 @@ Scans across all the outputs of a given transaction and checks whether them targ
 
 ### Inputs:
 tx_hash — string; transaction identifier.
+
 address — string; public address.
+
 view_key — string; hex-encoded view secret key corresponding to the given address.
 
 
 ### Outputs:
 amount_received — integer; amount of funds that the specified address has received with the specified transaction.
+
 outs_indicies — array of integers; idecies of transaction outputs which target specified address (field may not be present if there are not such outputs).
+
 payment_id_hex — string; hex-encoded payment identifier (or empty string if not present).
 
 
@@ -567,20 +627,20 @@ The following steps show an example of cold-signing process.
 
    1.1 Start simplewallet to generate master wallet:
 
-   **simplewallet --generate-new-wallet bbr_wallet_master**
+       **simplewallet --generate-new-wallet bbr_wallet_master**
    (bbr_wallet_master is wallet's filename and can be changed freely)
 
    1.2 Type in a password when asked.
 
    1.3 Type the following command into wallet's console:
 
-   **save_watch_only bbr_wallet_watch_only.keys WATCH_PASSWORD**
+       **save_watch_only bbr_wallet_watch_only.keys WATCH_PASSWORD**
 
    where WATCH_PASSWORD is password for a watch-only wallet.
 
    You should see:
 
-   **Keys stored to bbr_wallet_watch_only.keys**
+       **Keys stored to bbr_wallet_watch_only.keys**
 
    1.4 Type **exit** to quit simplewallet.
 
@@ -589,14 +649,13 @@ The following steps show an example of cold-signing process.
 **<blockquote>
 	NOTE: bbr_wallet_master.keys file contains master wallet private keys! You may want it to never leave secure environment.
 </blockquote>**
-3. In production environment start the daemon (let it perform initial sync if running for the first time and make sure it is synchronized), then start the watch-only wallet: 
+3. In production environment start the daemon (let it perform initial sync if running for the first time and make sure it is synchronized), then start the watch-only wallet:
 
+    **simplewallet --wallet-file bbr_wallet_watch_only.keys --password WATCH_PASSWORD** 
 
-**simplewallet --wallet-file bbr_wallet_watch_only.keys --password WATCH_PASSWORD** 
+    **--rpc-bind-ip RPC_IP --rpc-bind-port RPC_PORT --daemon-address** 
 
-**--rpc-bind-ip RPC_IP --rpc-bind-port RPC_PORT --daemon-address** 
-
-**DEAMON_ADDR:DAEMON_PORT --log-file LOG_FILE_NAME**
+    **DEAMON_ADDR:DAEMON_PORT --log-file LOG_FILE_NAME**
 
 (see also the Introduction; for the first run you can add **--log-level=0** to avoid too verbose messages, for subsequent runs you can use **--log-level=1** or **--log-level=2**)
 
@@ -606,6 +665,7 @@ Setup is complete.
 Because of using watch-only wallet keys for this instance of wallet application (please note passing **bbr_wallet_watch_only.keys** in i.3) a transaction will not be signed and broadcasted. Instead, unsigned transaction will be prepared and returned via RPC.
 
 RPC example (please, see also transfer RPC description in "List of RPC calls" section above):
+
 `
 $ curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --data-binary '{"jsonrpc":"2.0","id":"0","method":"transfer", "params":{   "destinations":[{"amount":1000000000000, "address":"1BAEEyNqgJ4RyHmMRDgGaTMG17D6JFAGV5G3yLYjV4hPMYaW4NvfiNhiGsGDi1f1BrYpZkAHxQHvuhujy62K3xqiCpgkq2L"}], "fee":1000000000, "mixin":0, "unlock_time":0   }}'
 `
@@ -624,7 +684,7 @@ Unsigned transaction data retrieved in tx_unsigned_hex field should be passed to
 
 5. Run master wallet within secure environment:
 
-**simplewallet --wallet-file bbr_wallet_master --password MASTER_PASSWORD --offline-mode**
+    **simplewallet --wallet-file bbr_wallet_master --password MASTER_PASSWORD --offline-mode**
 
 6. Using RPC sing_transfer sing the transaction using master wallet.
 
@@ -646,6 +706,7 @@ Signed transaction data retrieved in tx_signed_hex field should be passed to the
 7. Using RPC submit_transfer broadcast the transaction using watch-only wallet.
 
 RPC example:
+
 `
 $ curl http://127.0.0.1:12233/json_rpc -s -H 'content-type:application/json;' --data-binary '{"jsonrpc":"2.0","id":"0","method":"submit_transfer", "params":{  "tx_unsigned_hex": "00-LONG-HASH-00", "tx_signed_hex": "00-LONG-HASH-00"  }'
 `
